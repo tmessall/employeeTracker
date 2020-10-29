@@ -27,7 +27,7 @@ function makeChoice() {
                 viewEmps();
                 break;
             case options[1]:
-
+                viewEmpsByDep();
                 break;
             case options[2]:
 
@@ -53,6 +53,24 @@ function viewEmps() {
         if (err) throw err;
         console.table(res);
     });
+}
+
+function viewEmpsByDep() {
+    connection.query("SELECT department.name FROM department", (err, res) => {
+        if (err) throw err;
+        inquirer.prompt([{
+            type: "list",
+            message: "What department would you like to see?",
+            choices: res,
+            name: "choice"
+        }]).then(ans => {
+            connection.query("SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id WHERE department.name=?", [ans.choice], (err, res) => {
+                if (err) throw err;
+                console.table(res);
+            })
+        })
+    })
+
 }
 
 makeChoice();
