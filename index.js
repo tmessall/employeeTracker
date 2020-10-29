@@ -1,3 +1,4 @@
+require("console.table");
 var inquirer = require("inquirer");
 var mysql = require("mysql");
 var connection = mysql.createConnection({
@@ -11,18 +12,46 @@ var connection = mysql.createConnection({
 });
 
 function makeChoice() {
-    connection.query("SELECT * FROM employee", function (err, res) {
+    const options = ["View all employees", "View employees by department", "View employees by role", "Add employee", "Add role", "Add department", "Update employee role"]
+    inquirer.prompt([
+        {
+            type: "list",
+            message: "What would you like to do?",
+            choices: options,
+            name: "choice"
+        }
+    ]).then(ans => {
+        console.log(ans);
+        switch (ans.choice) {
+            case options[0]:
+                viewEmps();
+                break;
+            case options[1]:
+
+                break;
+            case options[2]:
+
+                break;
+            case options[3]:
+
+                break;
+            case options[4]:
+
+                break;
+            case options[5]:
+
+                break;
+            case options[6]:
+
+                break;
+        }
+    });
+}
+
+function viewEmps() {
+    connection.query("SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name AS department FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id", (err, res) => {
         if (err) throw err;
-        inquirer.prompt([
-            {
-                type: "list",
-                message: "What would you like to do?",
-                choices: ["View all employees", "View employees by department", "View employees by role", "Add employee", "Add role", "Add department", "Update employee role"],
-                name: "choice"
-            }
-        ]).then(ans => {
-            console.log(ans);
-        })
+        console.table(res);
     });
 }
 
