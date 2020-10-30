@@ -44,8 +44,8 @@ VALUES
     ("Jeff", "Joe", 2, 4),
     ("Jerry", "Zoe", 2, 4),
     ("Jason", "Moe", 1, null),
-    ("Jake", "Poe", 1, 4),
-    ("John", "Foe", 1, 4);
+    ("Jake", "Poe", 1, 3),
+    ("John", "Foe", 1, 5);
 
 
 

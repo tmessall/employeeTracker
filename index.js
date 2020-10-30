@@ -49,13 +49,13 @@ function makeChoice() {
 }
 
 function viewEmps() {
-    connection.query("SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name AS department FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id", (err, res) => {
+    connection.query("SELECT e.id, e.first_name, e.last_name, e.manager_id, role.title, role.salary, department.name AS department, CONCAT(m.first_name, \" \", m.last_name) AS \"Manager\" FROM employee e LEFT JOIN role ON e.role_id = role.id LEFT JOIN department ON role.department_id = department.id LEFT JOIN employee m ON e.manager_id = m.id", (err, res) => {
         if (err) throw err;
         console.table(res);
         makeChoice();
     });
 }
-// Show mgr on function above and below
+
 function viewEmpsByDep() {
     connection.query("SELECT department.name FROM department", (err, res) => {
         if (err) throw err;
@@ -65,7 +65,7 @@ function viewEmpsByDep() {
             choices: res,
             name: "choice"
         }]).then(ans => {
-            connection.query("SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id WHERE department.name=?", [ans.choice], (err, res) => {
+            connection.query("SELECT e.id, e.first_name, e.last_name, e.manager_id, role.title, role.salary, department.name AS department, CONCAT(m.first_name, \" \", m.last_name) AS \"Manager\" FROM employee e LEFT JOIN role ON e.role_id = role.id LEFT JOIN department ON role.department_id = department.id LEFT JOIN employee m ON e.manager_id = m.id WHERE department.name=?", [ans.choice], (err, res) => {
                 if (err) throw err;
                 console.table(res);
                 makeChoice();
@@ -83,7 +83,7 @@ function viewEmpsByRole() {
             choices: res.map(obj => obj.title),
             name: "choice"
         }]).then(ans => {
-            connection.query("SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id WHERE role.title=?", [ans.choice], (err, res) => {
+            connection.query("SELECT e.id, e.first_name, e.last_name, e.manager_id, role.title, role.salary, department.name AS department, CONCAT(m.first_name, \" \", m.last_name) AS \"Manager\" FROM employee e LEFT JOIN role ON e.role_id = role.id LEFT JOIN department ON role.department_id = department.id LEFT JOIN employee m ON e.manager_id = m.id WHERE role.title=?", [ans.choice], (err, res) => {
                 if (err) throw err;
                 console.table(res);
                 makeChoice();
