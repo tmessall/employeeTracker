@@ -42,7 +42,7 @@ function makeChoice() {
                 addDep();
                 break;
             case options[6]:
-
+                updateRole();
                 break;
         }
     });
@@ -182,4 +182,45 @@ function addDep() {
     });
 }
 
+function updateRole() {
+    connection.query("SELECT employee.first_name, employee.last_name FROM employee", (err, res) => {
+        if (err) throw err;
+        connection.query("SELECT role.title FROM role", (err, res2) => {
+            if (err) throw err;
+            inquirer.prompt([
+                {
+                    type: "list",
+                    message: "Which employee would you like to update?",
+                    choices: res.map(obj => `${obj.first_name} ${obj.last_name}`),
+                    name: "emp"
+                },
+                {
+                    type: "list",
+                    message: "Which role would you like them to have",
+                    choices: res2.map(obj => obj.title),
+                    name: "newRole"
+                }
+            ]).then(ans => {
+                console.log(ans.emp);
+                connection.query("SELECT role.id FROM role WHERE role.title=?", [ans.newRole], (err, res3) => {
+                    connection.query("UPDATE employee SET ? WHERE ?", [
+                        {
+                            role_id: res3[0].id
+                        },
+                        {
+                            first_name: ans.emp.substring(0, ans.emp.indexOf(" "))
+                        }
+                    ], (err, res) => {
+                        if (err) throw err;
+                        console.log("Role updated.");
+                        makeChoice();
+                    });
+                });
+            });
+        });
+    });
+
+}
+
+// Initializes the application
 makeChoice();
