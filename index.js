@@ -21,7 +21,6 @@ function makeChoice() {
             name: "choice"
         }
     ]).then(ans => {
-        console.log(ans);
         switch (ans.choice) {
             case options[0]:
                 viewEmps();
@@ -118,7 +117,6 @@ function addEmp() {
                     choices: [...res2.map(obj => `${obj.first_name} ${obj.last_name}`), "N/A"],
                     name: "mgr"
                 }
-                // Get mgr name and include that as id
             ]).then(ans => {
                 connection.query("SELECT role.id FROM role WHERE role.title=?", [ans.role], (err, res) => {
                     if (err) throw err;
@@ -171,7 +169,6 @@ function addRole() {
                 choices: res.map(obj => obj.name),
                 name: "dep"
             }
-            // Get mgr name and include that as id
         ]).then(ans => {
             connection.query("SELECT department.id FROM department WHERE department.name=?", [ans.dep], (err, res) => {
                 if (err) throw err;
@@ -225,7 +222,6 @@ function updateRole() {
                     name: "newRole"
                 }
             ]).then(ans => {
-                console.log(ans.emp);
                 connection.query("SELECT role.id FROM role WHERE role.title=?", [ans.newRole], (err, res3) => {
                     connection.query("UPDATE employee SET ? WHERE ?", [
                         {
