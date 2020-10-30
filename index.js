@@ -39,7 +39,7 @@ function makeChoice() {
                 addRole();
                 break;
             case options[5]:
-
+                addDep();
                 break;
             case options[6]:
 
@@ -163,6 +163,23 @@ function addRole() {
             })
         })
     })
+}
+
+function addDep() {
+    inquirer.prompt([
+        {
+            message: "What is the department name?",
+            name: "name"
+        }
+    ]).then(ans => {
+        connection.query("INSERT INTO department SET ?", {
+            name: ans.name,
+        }, (err, res) => {
+            if (err) throw err;
+            console.log("Department added.");
+            makeChoice();
+        });
+    });
 }
 
 makeChoice();
