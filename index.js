@@ -33,7 +33,7 @@ function makeChoice() {
 
                 break;
             case options[3]:
-
+                addEmp();
                 break;
             case options[4]:
 
@@ -52,9 +52,10 @@ function viewEmps() {
     connection.query("SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name AS department FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id", (err, res) => {
         if (err) throw err;
         console.table(res);
+        makeChoice();
     });
 }
-
+// Show mgr on function above and below
 function viewEmpsByDep() {
     connection.query("SELECT department.name FROM department", (err, res) => {
         if (err) throw err;
@@ -67,10 +68,47 @@ function viewEmpsByDep() {
             connection.query("SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id WHERE department.name=?", [ans.choice], (err, res) => {
                 if (err) throw err;
                 console.table(res);
+                makeChoice();
+            });
+        });
+    });
+}
+
+function addEmp() {
+    connection.query("SELECT role.title FROM role", (err, res) => {
+        if (err) throw err;
+        inquirer.prompt([
+            {
+                message: "What is the employee's first name?",
+                name: "firstName"
+            },
+            {
+                message: "What is the employee's last name?",
+                name: "lastName"
+            },
+            {
+                type: "list",
+                message: "What is the employee's role?",
+                choices: res.map(obj => obj.title),
+                name: "role"
+            }
+            // Get mgr name and include that as id
+        ]).then(ans => {
+            console.log(ans.role);
+            connection.query("SELECT role.id FROM role WHERE role.title=?", [ans.role], (err, res) => {
+                if (err) throw err;
+                connection.query("INSERT INTO employee SET ?", {
+                    first_name: ans.firstName,
+                    last_name: ans.lastName,
+                    role_id: res[0].id,
+                }, (err, res) => {
+                    if (err) throw err;
+                    console.log("Employee added.");
+                    makeChoice();
+                });
             })
         })
     })
-
 }
 
 makeChoice();
