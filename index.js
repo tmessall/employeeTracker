@@ -36,7 +36,7 @@ function makeChoice() {
                 addEmp();
                 break;
             case options[4]:
-
+                addRole();
                 break;
             case options[5]:
 
@@ -122,6 +122,42 @@ function addEmp() {
                 }, (err, res) => {
                     if (err) throw err;
                     console.log("Employee added.");
+                    makeChoice();
+                });
+            })
+        })
+    })
+}
+
+function addRole() {
+    connection.query("SELECT department.name FROM department", (err, res) => {
+        if (err) throw err;
+        inquirer.prompt([
+            {
+                message: "What is the role's title?",
+                name: "title"
+            },
+            {
+                message: "What is the role's salary?",
+                name: "sal"
+            },
+            {
+                type: "list",
+                message: "What is the role's department?",
+                choices: res.map(obj => obj.name),
+                name: "dep"
+            }
+            // Get mgr name and include that as id
+        ]).then(ans => {
+            connection.query("SELECT department.id FROM department WHERE department.name=?", [ans.dep], (err, res) => {
+                if (err) throw err;
+                connection.query("INSERT INTO role SET ?", {
+                    title: ans.title,
+                    salary: ans.sal,
+                    department_id: res[0].id,
+                }, (err, res) => {
+                    if (err) throw err;
+                    console.log("Role added.");
                     makeChoice();
                 });
             })
